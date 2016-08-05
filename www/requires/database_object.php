@@ -4,7 +4,7 @@ abstract class Database_Object {
 
 	//array containing column names NOT to auto-set to lowercase
 	protected static $fields_to_ignore = array('username','body','file_name','url','random_key',
-		'variable_name','variable_value','vaccination_name','hashed_password','email_address');
+		'variable_name','variable_value','vaccination_name','hashed_password','email_address','column_name');
 
 	//automatically sets the default fields on new object(s)
 	function __construct() {
@@ -35,6 +35,10 @@ abstract class Database_Object {
 		//only do this if the table contains a field is_reset
 		if(in_array("is_reset", static::$db_fields)) 
 			$this->is_reset = 0;
+			
+		//only do this if the table contains a field role_wk
+		if(in_array("role_wk", static::$db_fields)) 
+			$this->role_wk = 1;
 			
 		//if we're in the Page class, set these default values
 		if(get_class($this) == "Page") {

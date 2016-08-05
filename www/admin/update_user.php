@@ -59,6 +59,18 @@
 			}
 		}
 		
+		// if user is the last admin or staff, cannot delete account
+		if($is_deleted == '1' && $the_user->is_deleted == '0')
+		{
+			//only do this check if we're disabling an account
+			$user_array = User::find_by_sql("SELECT * FROM `user` WHERE `role_wk` = " . $the_user->role_wk . " AND `is_deleted` = 0;"); // find all of the ADMINs
+			if (count($user_array) <= 1) // if last ADMIN of last STAFF account...
+			{
+				$session->message("You are the last " . $user->role_wk->name . "!<br />Another " . $user->role_wk->name . " account must be created before this one can be disabled.");
+				redirect_head("search_users.php");
+			}
+		}
+		
 		//only save the user if there are no errors
 		if(empty($session->message)) {
 			$the_user->email_address = $email_address;
@@ -88,9 +100,9 @@
 ?>
 	
 	<!-- update user form -->
-	<form id="update_user" action="<?php echo file_name_with_get(); ?>" method="post">
-		email address: <input type="text" name="email_address" value="<?php echo $the_user->email_address; ?>" /> <br />
-		role: <select name="role_wk">
+	<section id="registration" class="container"><form class="center" role="form" id="update_user" action="<?php echo file_name_with_get(); ?>" method="post" ><fieldset class="registration-form">
+		Email address: <br><div class="form-group"><input type="text" class="form-control" name="email_address" value="<?php echo $the_user->email_address; ?>" /> </div>
+		Role: <br><div class="form-group"><select class="form-control" name="role_wk">
 					<?php
 						
 						//get all the roles
@@ -106,18 +118,19 @@
 						}
 					
 					?>
-			  </select><br />
-		password: <input type="password" name="password" value=""/> <br />
-		confirm password: <input type="password" name="confirmed_password" value=""/> <br />
-		first name: <input type="text" name="first_name" value="<?php echo $the_user->first_name; ?>" /> <br />
-		last name: <input type="text" name="last_name" value="<?php echo $the_user->last_name; ?>" /> <br />
-		phone number: <input type="text" name="phone_number" value="<?php echo $the_user->phone_number; ?>" /> <br />
-		receive email notifications: <input type="radio" name="email_notifications" <?php if($the_user->is_notifications_enabled == "0") echo "checked"; ?>  value="0">No
-	    <input type="radio" name="email_notifications" <?php if($the_user->is_notifications_enabled == "1") echo "checked"; ?>  value="1">Yes<br />
-	    disable: <input type="radio" name="is_deleted" <?php if($the_user->is_deleted == "0") echo "checked"; ?>  value="0">No
-	    <input type="radio" name="is_deleted" <?php if($the_user->is_deleted == "1") echo "checked"; ?>  value="1">Yes<br />
-		<input type="submit" value="submit" name="submit"/>
-	</form>
+			  </select></div>
+		Password: <br><div class="form-group"><input type="password" class="form-control" name="password" value=""/> </div>
+		Confirm password: <br><div class="form-group"><input type="password" class="form-control" name="confirmed_password" value=""/> </div>
+		First name: <br><div class="form-group"><input type="text" class="form-control" name="first_name" value="<?php echo $the_user->first_name; ?>" /></div>
+		Last name: <br><div class="form-group"><input type="text" class="form-control" name="last_name" value="<?php echo $the_user->last_name; ?>" /> </div>
+		Phone number: <br><div class="form-group"><input type="text" class="form-control" name="phone_number" value="<?php echo $the_user->phone_number; ?>" /> </div>
+		Receive email notifications: <br><div class="form-group"><input type="radio" class="custom-radio" name="email_notifications" <?php if($the_user->is_notifications_enabled == "0") echo "checked"; ?>  value="0">&nbsp;&nbsp;No&nbsp;&nbsp;&nbsp;&nbsp;
+	    <input type="radio" class="custom-radio" name="email_notifications" <?php if($the_user->is_notifications_enabled == "1") echo "checked"; ?>  value="1">&nbsp;&nbsp;Yes</div>
+	    Disable: <br><div class="form-group"><input type="radio" class="custom-radio" name="is_deleted" <?php if($the_user->is_deleted == "0") echo "checked"; ?>  value="0">&nbsp;&nbsp;No&nbsp;&nbsp;&nbsp;&nbsp;
+	    <input type="radio" class="custom-radio" name="is_deleted" <?php if($the_user->is_deleted == "1") echo "checked"; ?>  value="1">&nbsp;&nbsp; Yes</div>
+		
+		<div class="form-group"><button type="submit" value="submit" name="submit" class="btn btn-success btn-md btn-block">Submit</button></div>
+	</fieldset></form></section>
 
 <?php
 	
